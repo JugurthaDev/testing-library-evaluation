@@ -1,4 +1,17 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
+
+- [Exercice de test d'intégration](#exercice-de-test-dint%C3%A9gration)
+  - [Consignes](#consignes)
+  - [Premier scénario : cas passant](#premier-sc%C3%A9nario--cas-passant)
+    - [Second scénario : cas non passant](#second-sc%C3%A9nario--cas-non-passant)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # Exercice de test d'intégration
+
+Resultat test : ![image](image.png)
 
 ## Consignes
 
