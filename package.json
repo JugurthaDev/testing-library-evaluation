@@ -56,7 +56,16 @@
       "import/no-unassigned-import": "off",
       "no-console": "off",
       "jsx-a11y/accessible-emoji": "off",
-      "consistent-return": "off"
+      "consistent-return": "off",
+      "react/jsx-filename-extension": [
+        1,
+        {
+          "extensions": [
+            ".jsx",
+            ".js"
+          ]
+        }
+      ]
     },
     "overrides": [
       {
