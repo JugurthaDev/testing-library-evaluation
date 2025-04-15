@@ -3,96 +3,70 @@ import {render, screen, waitFor} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import App from '../app.jsx'
 
-test('Premier scénario : cas passant', async () => {
+test('complete form journey - happy path', async () => {
   render(<App />)
 
-  // 1 - L'utilisateur est sur la page d'accueil
-  // 2 - Un titre "Welcome home" est dans le document
   expect(
     screen.getByRole('heading', {name: /welcome home/i}),
   ).toBeInTheDocument()
 
-  // 3 - Un lien "Fill out the form" est dans le document
   const fillFormLink = screen.getByRole('link', {name: /fill out the form/i})
   expect(fillFormLink).toBeInTheDocument()
   userEvent.click(fillFormLink)
 
-  // 5 - L'utilisateur est redirigé sur la page 1
-  // 6 - Un titre "Page 1" est dans le document
   await waitFor(() => {
     expect(screen.getByRole('heading', {name: /page 1/i})).toBeInTheDocument()
   })
 
-  // 7 - Un lien "Go home" est dans le document
   expect(screen.getByRole('link', {name: /go home/i})).toBeInTheDocument()
 
-  // 8 - Un champ avec le label "Favorite food" est dans le document
   const foodInput = screen.getByLabelText(/favorite food/i)
   expect(foodInput).toBeInTheDocument()
   userEvent.type(foodInput, 'Les pâtes')
 
-  // 10 - Un lien "Next" est dans le document
   const nextLink = screen.getByRole('link', {name: /next/i})
   expect(nextLink).toBeInTheDocument()
   userEvent.click(nextLink)
 
-  // 12 - L'utilisateur est redirigé sur la page 2
-  // 13 - Un titre "Page 2" est dans le document
   await waitFor(() => {
     expect(screen.getByRole('heading', {name: /page 2/i})).toBeInTheDocument()
   })
 
-  // 14 - Un lien "Go back" est dans le document
   expect(screen.getByRole('link', {name: /go back/i})).toBeInTheDocument()
 
-  // 15 - Un champ avec le label "Favorite drink" est dans le document
   const drinkInput = screen.getByLabelText(/favorite drink/i)
   expect(drinkInput).toBeInTheDocument()
   userEvent.type(drinkInput, 'Bière')
 
-  // 17 - Un lien "Review" est dans le document
   const reviewLink = screen.getByRole('link', {name: /review/i})
   expect(reviewLink).toBeInTheDocument()
   userEvent.click(reviewLink)
 
-  // 19 - L'utilisateur est redirigé sur la page de confirmation
-  // 20 - Un titre "Confirm" est dans le document
   await waitFor(() => {
     expect(screen.getByRole('heading', {name: /confirm/i})).toBeInTheDocument()
   })
 
-  // 21 - Un texte "Please confirm your choices" est dans le document
   expect(screen.getByText(/please confirm your choices/i)).toBeInTheDocument()
 
-  // 22 - Un texte label "favorite food" a pour contenu "Les pâtes"
-  // 23 - Un texte label "favorite drink" a pour contenu "Bière"
   expect(screen.getByLabelText(/favorite food/i)).toHaveTextContent('Les pâtes')
   expect(screen.getByLabelText(/favorite drink/i)).toHaveTextContent('Bière')
 
-  // 24 - Un lien "Go back" est dans le document
-  // 25 - Un bouton "Confirm" est dans le document
   expect(screen.getByRole('link', {name: /go back/i})).toBeInTheDocument()
   const confirmButton = screen.getByRole('button', {name: /confirm/i})
   expect(confirmButton).toBeInTheDocument()
 
-  // 26 - L'utilisateur clique sur le bouton "Confirm"
   userEvent.click(confirmButton)
 
-  // 27 - L'utilisateur est redirigé sur la page de Félicitation
-  // 28 - Un titre "Congrats. You did it." est dans le document
   await waitFor(() => {
     expect(
       screen.getByRole('heading', {name: /congrats\. you did it\./i}),
     ).toBeInTheDocument()
   })
 
-  // 29 - Un lien "Go home" est dans le document
   const goHomeLink = screen.getByRole('link', {name: /go home/i})
   expect(goHomeLink).toBeInTheDocument()
   userEvent.click(goHomeLink)
 
-  // 31 - L'utilisateur est redirigé sur la home
-  // 32 - Un titre "Welcome home" est dans le document
   await waitFor(() => {
     expect(
       screen.getByRole('heading', {name: /welcome home/i}),
@@ -100,49 +74,27 @@ test('Premier scénario : cas passant', async () => {
   })
 })
 
-test('Second scénario : cas non passant', async () => {
+test('form submission with empty fields - error path', async () => {
   render(<App />)
 
-  // 1 - L'utilisateur est sur la page d'accueil
-  // 2 - Un titre "Welcome home" est dans le document
   userEvent.click(screen.getByRole('link', {name: /fill out the form/i}))
 
-  // 5 - L'utilisateur est redirigé sur la page 1
-  // 6 - Un titre "Page 1" est dans le document
   await waitFor(() => {
     expect(screen.getByRole('heading', {name: /page 1/i})).toBeInTheDocument()
   })
-
-  // 9 - L'utilisateur laisse le champ "Favorite food" vide
   userEvent.click(screen.getByRole('link', {name: /next/i}))
 
-  // 12 - L'utilisateur est redirigé sur la page 2
-  // 13 - Un titre "Page 2" est dans le document
   await waitFor(() => {
     expect(screen.getByRole('heading', {name: /page 2/i})).toBeInTheDocument()
   })
-
-  // 15 - Un champ avec le label "Favorite drink" est dans le document
-  // 16 - L'utilisateur remplit le champ "Favorite drink" avec "Bière"
   userEvent.type(screen.getByLabelText(/favorite drink/i), 'Bière')
   userEvent.click(screen.getByRole('link', {name: /review/i}))
 
-  // 19 - L'utilisateur est redirigé sur la page de confirmation
-  // 20 - Un titre "Confirm" est dans le document
   await waitFor(() => {
     expect(screen.getByRole('heading', {name: /confirm/i})).toBeInTheDocument()
   })
-
-  // 22 - Un texte label "favorite food" a pour contenu ""
-  // 23 - Un texte label "favorite drink" a pour contenu "Bière"
-  expect(screen.getByLabelText(/favorite food/i)).toHaveTextContent('')
-  expect(screen.getByLabelText(/favorite drink/i)).toHaveTextContent('Bière')
-
-  // 25 - Un bouton "Confirm" est dans le document
   userEvent.click(screen.getByRole('button', {name: /confirm/i}))
 
-  // 27 - L'utilisateur est redirigé sur la page d'erreur
-  // 28 - Un texte "Oh no. There was an error." est dans le document
   await waitFor(() => {
     expect(
       screen.getByText(/oh no\. there was an error\./i),
@@ -151,18 +103,201 @@ test('Second scénario : cas non passant', async () => {
   expect(
     screen.getByText(/les champs food et drink sont obligatoires/i),
   ).toBeInTheDocument()
+})
 
-  // 30 - Un lien "Go home" est dans le document
-  // 31 - Un lien "Try again" est dans le document
-  expect(screen.getByRole('link', {name: /go home/i})).toBeInTheDocument()
-  expect(screen.getByRole('link', {name: /try again/i})).toBeInTheDocument()
+test('form submission with empty fields - complete error path', async () => {
+  window.history.pushState({}, '', '/')
+  render(<App />)
 
-  // 32 - L'utilisateur clique sur le lien "Try again"
-  userEvent.click(screen.getByRole('link', {name: /try again/i}))
+  expect(
+    screen.getByRole('heading', {name: /welcome home/i}),
+  ).toBeInTheDocument()
 
-  // 34 - L'utilisateur est redirigé sur la page 1
-  // 34 - Un titre "Page 1" est dans le document
+  const fillFormLink = screen.getByRole('link', {name: /fill out the form/i})
+  expect(fillFormLink).toBeInTheDocument()
+  userEvent.click(fillFormLink)
+
   await waitFor(() => {
     expect(screen.getByRole('heading', {name: /page 1/i})).toBeInTheDocument()
   })
+
+  expect(screen.getByRole('link', {name: /go home/i})).toBeInTheDocument()
+
+  const foodInput = screen.getByLabelText(/favorite food/i)
+  expect(foodInput).toBeInTheDocument()
+
+  const nextLink = screen.getByRole('link', {name: /next/i})
+  expect(nextLink).toBeInTheDocument()
+  userEvent.click(nextLink)
+
+  await waitFor(() => {
+    expect(screen.getByRole('heading', {name: /page 2/i})).toBeInTheDocument()
+  })
+
+  expect(screen.getByRole('link', {name: /go back/i})).toBeInTheDocument()
+
+  const drinkInput = screen.getByLabelText(/favorite drink/i)
+  expect(drinkInput).toBeInTheDocument()
+  userEvent.type(drinkInput, 'Bière')
+
+  const reviewLink = screen.getByRole('link', {name: /review/i})
+  expect(reviewLink).toBeInTheDocument()
+  userEvent.click(reviewLink)
+
+  await waitFor(() => {
+    expect(screen.getByRole('heading', {name: /confirm/i})).toBeInTheDocument()
+  })
+
+  expect(screen.getByText(/please confirm your choices/i)).toBeInTheDocument()
+
+  expect(screen.getByLabelText(/favorite food/i)).toHaveTextContent('')
+  expect(screen.getByLabelText(/favorite drink/i)).toHaveTextContent('Bière')
+
+  expect(screen.getByRole('link', {name: /go back/i})).toBeInTheDocument()
+  const confirmButton = screen.getByRole('button', {name: /confirm/i})
+  expect(confirmButton).toBeInTheDocument()
+
+  userEvent.click(confirmButton)
+
+  await waitFor(() => {
+    expect(
+      screen.getByText(/oh no\. there was an error\./i),
+    ).toBeInTheDocument()
+  })
+
+  expect(
+    screen.getByText(/les champs food et drink sont obligatoires/i),
+  ).toBeInTheDocument()
+
+  expect(screen.getByRole('link', {name: /go home/i})).toBeInTheDocument()
+  const tryAgainLink = screen.getByRole('link', {name: /try again/i})
+  expect(tryAgainLink).toBeInTheDocument()
+
+  userEvent.click(tryAgainLink)
+
+  await waitFor(() => {
+    expect(screen.getByRole('heading', {name: /page 1/i})).toBeInTheDocument()
+  })
+})
+
+test('navigation entre les pages avec Go back et Go home', async () => {
+  window.history.pushState({}, '', '/')
+  render(<App />)
+
+  const fillFormLink = screen.getByRole('link', {name: /fill out the form/i})
+  expect(fillFormLink).toBeInTheDocument()
+  userEvent.click(fillFormLink)
+
+  await waitFor(() => {
+    expect(screen.getByRole('heading', {name: /page 1/i})).toBeInTheDocument()
+  })
+
+  userEvent.click(screen.getByRole('link', {name: /go home/i}))
+  await waitFor(() => {
+    expect(
+      screen.getByRole('heading', {name: /welcome home/i}),
+    ).toBeInTheDocument()
+  })
+
+  const fillFormLinkAgain = screen.getByRole('link', {
+    name: /fill out the form/i,
+  })
+  expect(fillFormLinkAgain).toBeInTheDocument()
+  userEvent.click(fillFormLinkAgain)
+
+  await waitFor(() => {
+    expect(screen.getByRole('heading', {name: /page 1/i})).toBeInTheDocument()
+  })
+  userEvent.type(screen.getByLabelText(/favorite food/i), 'Les pâtes')
+  userEvent.click(screen.getByRole('link', {name: /next/i}))
+
+  await waitFor(() => {
+    expect(screen.getByRole('heading', {name: /page 2/i})).toBeInTheDocument()
+  })
+  userEvent.click(screen.getByRole('link', {name: /go back/i}))
+
+  await waitFor(() => {
+    expect(screen.getByRole('heading', {name: /page 1/i})).toBeInTheDocument()
+  })
+
+  expect(screen.getByLabelText(/favorite food/i)).toHaveValue('Les pâtes')
+})
+
+test('network error handling in UI', async () => {
+  const originalFetch = global.fetch
+  global.fetch = jest.fn(() => Promise.reject(new Error('Network error')))
+
+  window.history.pushState({}, '', '/')
+  render(<App />)
+
+  const fillFormLink = screen.getByRole('link', {name: /fill out the form/i})
+  expect(fillFormLink).toBeInTheDocument()
+  userEvent.click(fillFormLink)
+
+  await waitFor(() => {
+    expect(screen.getByRole('heading', {name: /page 1/i})).toBeInTheDocument()
+  })
+
+  userEvent.type(screen.getByLabelText(/favorite food/i), 'Les pâtes')
+  userEvent.click(screen.getByRole('link', {name: /next/i}))
+
+  await waitFor(() => {
+    expect(screen.getByRole('heading', {name: /page 2/i})).toBeInTheDocument()
+  })
+
+  userEvent.type(screen.getByLabelText(/favorite drink/i), 'Bière')
+  userEvent.click(screen.getByRole('link', {name: /review/i}))
+
+  await waitFor(() => {
+    expect(screen.getByRole('heading', {name: /confirm/i})).toBeInTheDocument()
+  })
+
+  userEvent.click(screen.getByRole('button', {name: /confirm/i}))
+
+  await waitFor(() => {
+    expect(
+      screen.getByText(/oh no\. there was an error\./i),
+    ).toBeInTheDocument()
+  })
+
+  expect(screen.getByText(/network error/i, {exact: false})).toBeInTheDocument()
+  global.fetch = originalFetch
+})
+
+test('soumission de formulaire via onSubmit', async () => {
+  window.history.pushState({}, '', '/')
+  render(<App />)
+
+  const fillFormLink = screen.getByRole('link', {name: /fill out the form/i})
+  userEvent.click(fillFormLink)
+
+  await waitFor(() => {
+    expect(screen.getByRole('heading', {name: /page 1/i})).toBeInTheDocument()
+  })
+
+  const foodInput = screen.getByLabelText(/favorite food/i)
+  userEvent.type(foodInput, 'Les pâtes{enter}')
+
+  await waitFor(() => {
+    expect(screen.getByRole('heading', {name: /page 2/i})).toBeInTheDocument()
+  })
+
+  const drinkInput = screen.getByLabelText(/favorite drink/i)
+  userEvent.type(drinkInput, 'Bière{enter}')
+
+  await waitFor(() => {
+    expect(screen.getByRole('heading', {name: /confirm/i})).toBeInTheDocument()
+  })
+})
+
+test('accès direct aux différentes routes', async () => {
+  window.history.pushState({}, '', '/error')
+  render(<App />)
+
+  expect(screen.getByText(/oh no\. there was an error\./i)).toBeInTheDocument()
+
+  window.history.pushState({}, '', '/success')
+  render(<App />)
+
+  expect(screen.getByRole('heading', {name: /congrats/i})).toBeInTheDocument()
 })
