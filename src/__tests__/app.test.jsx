@@ -3,7 +3,7 @@ import {render, screen, waitFor} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import App from '../app.jsx'
 
-test('cas passant', async () => {
+test('Premier scénario : cas passant', async () => {
   render(<App />)
 
   // 1 - L'utilisateur est sur la page d'accueil
@@ -100,7 +100,7 @@ test('cas passant', async () => {
   })
 })
 
-test('cas non passant', async () => {
+test('Second scénario : cas non passant', async () => {
   render(<App />)
 
   // 1 - L'utilisateur est sur la page d'accueil
